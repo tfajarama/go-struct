@@ -13,14 +13,23 @@ import (
 func main() {
 	app := fiber.New()
 
+	// Connect to the database
 	database.ConnectDatabase()
 
+	// Products Dependency Injection
 	productRepo := repositories.NewProductRepository(database.DB)
 	productService := services.NewProductService(productRepo)
 	productController := controllers.NewProductController(productService)
 
-	routes.SetupRoutes(app, productController)
+	// Customers Dependency Injection
+	customerRepo := repositories.NewCustomerRepository(database.DB)
+	customerService := services.NewCustomerService(customerRepo)
+	customerController := controllers.NewCustomerController(customerService)
 
+	// Setup Routes
+	routes.SetupRoutes(app, productController, customerController)
+
+	// Start Server
 	err := app.Listen(":8080")
 	if err != nil {
 		fmt.Println(err)
